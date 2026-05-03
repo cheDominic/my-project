@@ -482,7 +482,7 @@
   <div class="sidebar-logo">
     <div class="badge">Manual v1.0</div>
     <h2>Render 배포<br>환경 구성 가이드</h2>
-    <p>FastAPI · Vue.js · React · PostgreSQL</p>
+    <p>FastAPI · Vue.js · React · Supabase</p>
   </div>
 
   <div class="nav-section">
@@ -528,7 +528,7 @@
     <a class="nav-item" href="#step6">
       <span class="nav-num">6</span>
       <span class="nav-dot"></span>
-      PostgreSQL 생성
+      Supabase DB 설정
     </a>
     <a class="nav-item" href="#step7">
       <span class="nav-num">7</span>
@@ -574,7 +574,7 @@
     <span class="stack-badge badge-python">FastAPI</span>
     <span class="stack-badge badge-vue">Vue.js 3</span>
     <span class="stack-badge badge-react">React 18</span>
-    <span class="stack-badge badge-pg">PostgreSQL</span>
+    <span class="stack-badge badge-pg">Supabase</span>
     <span class="stack-badge badge-render">Render Free</span>
   </div>
 
@@ -608,7 +608,7 @@
         <div class="arch-row">
           <div class="arch-box arch-python">🐍 FastAPI<br><span style="font-size:10px; opacity:0.7;">api.xxx.onrender.com</span></div>
           <div class="arch-arrow">←→</div>
-          <div class="arch-box arch-db">🐘 PostgreSQL<br><span style="font-size:10px; opacity:0.7;">내부 연결</span></div>
+          <div class="arch-box arch-db">🟢 Supabase<br><span style="font-size:10px; opacity:0.7;">외부 연결 (SSL)</span></div>
         </div>
         <div style="margin: 8px 0; color: var(--border);">↑ REST API 호출</div>
         <div class="arch-row">
@@ -648,6 +648,10 @@
           <li>
             <span class="check"></span>
             <div><strong><a href="https://render.com" target="_blank">Render</a></strong> — 배포 플랫폼. <strong>GitHub 계정으로 가입 권장</strong> (연동 간편)</div>
+          </li>
+          <li>
+            <span class="check"></span>
+            <div><strong><a href="https://supabase.com" target="_blank">Supabase</a></strong> — PostgreSQL DB 호스팅. <strong>GitHub 계정으로 가입 권장</strong></div>
           </li>
         </ul>
       </div>
@@ -970,37 +974,93 @@ git push origin main</pre>
       </div>
     </div>
 
-    <!-- STEP 6: PostgreSQL -->
+    <!-- STEP 6: Supabase -->
     <div class="step-section" id="step6">
       <div class="step-header">
         <span class="step-number">STEP 06</span>
         <div class="step-title-group">
-          <h2>Render — PostgreSQL 생성</h2>
-          <p>Render 대시보드에서 관리형 DB를 생성합니다</p>
+          <h2>Supabase — PostgreSQL DB 설정</h2>
+          <p>Render DB 대신 Supabase 무료 플랜을 사용합니다 — 무기한 무료</p>
         </div>
       </div>
       <div class="step-divider"></div>
 
+      <h3>🆚 Supabase vs Render PostgreSQL</h3>
+      <div style="margin: 12px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+        <table class="env-table">
+          <tr>
+            <th></th>
+            <th style="color: #22c55e;">Supabase Free ✅</th>
+            <th>Render Free</th>
+          </tr>
+          <tr>
+            <td class="desc">기간</td>
+            <td><strong style="color: var(--green);">무기한</strong></td>
+            <td class="desc">90일 후 삭제</td>
+          </tr>
+          <tr>
+            <td class="desc">용량</td>
+            <td><span class="val">500MB</span></td>
+            <td class="desc">256MB</td>
+          </tr>
+          <tr>
+            <td class="desc">대시보드 UI</td>
+            <td><span style="color: var(--green);">✅ 풍부 (Table Editor, SQL Editor)</span></td>
+            <td class="desc">기본</td>
+          </tr>
+          <tr>
+            <td class="desc">비용</td>
+            <td><strong style="color: var(--green);">무료</strong></td>
+            <td class="desc">무료 → $7/월</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>① Supabase 프로젝트 생성</h3>
       <ul class="steps-list">
-        <li><a href="https://dashboard.render.com" target="_blank">dashboard.render.com</a> 접속 → GitHub 계정으로 로그인</li>
-        <li>우측 상단 <strong>"New +"</strong> 클릭 → <strong>"PostgreSQL"</strong> 선택</li>
+        <li><a href="https://supabase.com" target="_blank">supabase.com</a> 접속 → <strong>GitHub 계정으로 가입/로그인</strong></li>
+        <li><strong>"New Project"</strong> 클릭</li>
         <li>설정 입력:
-          <br>• Name: <code>my-project-db</code>
-          <br>• Region: <strong>Singapore</strong> (한국에서 가장 가까움)
-          <br>• Plan: <strong>Free</strong> 선택
+          <br>• Name: <code>my-project</code>
+          <br>• Database Password: 강력한 비밀번호 입력 → <strong>반드시 메모장에 저장</strong>
+          <br>• Region: <strong>Northeast Asia (Seoul)</strong> 선택
         </li>
-        <li><strong>"Create Database"</strong> 클릭 → 약 1~2분 대기</li>
-        <li>생성 완료 후 <strong>Connections 탭</strong> 클릭 → <strong>"Internal Database URL"</strong> 값을 복사해 메모장에 저장</li>
+        <li><strong>"Create new project"</strong> 클릭 → 약 2분 대기</li>
       </ul>
 
-      <div class="callout callout-warn">
-        <span class="callout-icon">⚠️</span>
-        <div><strong>Internal URL</strong>을 복사하세요 (External URL 아님). Internal은 Render 내부 네트워크에서만 사용 가능하며, 더 빠르고 안전합니다. 형태: <code>postgresql://user:pass@dpg-xxx-a/dbname</code></div>
+      <h3>② 연결 URL 복사</h3>
+      <ul class="steps-list">
+        <li>프로젝트 대시보드 상단 <strong>"Connect"</strong> 버튼 클릭</li>
+        <li>팝업에서 <strong>"Transaction pooler"</strong> 탭 선택</li>
+        <li>아래 형태의 URI 복사 → <strong>메모장에 저장</strong></li>
+      </ul>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-label">복사할 URL 형태</span>
+          <button class="code-copy" onclick="copyCode(this)">복사</button>
+        </div>
+        <pre>postgresql://postgres.[project-ref]:[YOUR-PASSWORD]@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres</pre>
       </div>
 
       <div class="callout callout-warn">
         <span class="callout-icon">⚠️</span>
-        <div>Render 무료 PostgreSQL은 <strong>90일 후 자동 삭제</strong>됩니다. 실서비스 전에 유료 플랜($7/월)으로 업그레이드하거나, Supabase Free 티어(무기한)로 대체할 것을 권장합니다.</div>
+        <div>URL 안의 <code>[YOUR-PASSWORD]</code>를 ①에서 설정한 비밀번호로 교체하세요. URL에 <code>[</code> <code>]</code> 대괄호가 남아있으면 연결 오류가 발생합니다.</div>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <div>Supabase 무료 플랜은 <strong>1주일 미접속 시 프로젝트 일시정지</strong>됩니다. 주 1회 이상 대시보드에 접속하거나, UptimeRobot으로 주기적 헬스체크를 걸어두면 유지됩니다.</div>
+      </div>
+
+      <h3>③ Supabase 대시보드 주요 기능</h3>
+      <div class="card">
+        <div class="card-title"><span class="icon">🗄️</span> 웹 UI에서 바로 DB 관리 가능</div>
+        <ul class="checklist">
+          <li><span class="check"></span><div><strong>Table Editor</strong> — GUI로 테이블 생성 및 데이터 조회/수정</div></li>
+          <li><span class="check"></span><div><strong>SQL Editor</strong> — SQL 직접 실행, 쿼리 저장</div></li>
+          <li><span class="check"></span><div><strong>Database → Backups</strong> — 자동 백업 확인 (유료 플랜)</div></li>
+        </ul>
       </div>
     </div>
 
@@ -1041,8 +1101,8 @@ git push origin main</pre>
           </tr>
           <tr>
             <td><span class="key">DATABASE_URL</span></td>
-            <td><span class="val">6단계에서 복사한 Internal URL</span></td>
-            <td class="desc">PostgreSQL 연결 문자열</td>
+            <td><span class="val">6단계에서 복사한 Supabase Transaction pooler URL</span></td>
+            <td class="desc">Supabase PostgreSQL 연결 문자열</td>
           </tr>
           <tr>
             <td><span class="key">PYTHON_VERSION</span></td>
@@ -1277,8 +1337,10 @@ git push origin main
       <div class="card">
         <div class="card-title">🔴 DATABASE_URL 연결 오류</div>
         <ul class="steps-list">
-          <li>Render 대시보드 → PostgreSQL 서비스 → Connections 탭 → <strong>Internal URL</strong> 재확인</li>
-          <li>FastAPI 서비스와 PostgreSQL 서비스가 <strong>같은 Region</strong>에 있는지 확인 (Singapore = Singapore)</li>
+          <li>Supabase 대시보드 상단 <strong>"Connect"</strong> 버튼 → <strong>Transaction pooler URL</strong> 재확인</li>
+          <li>URL에 <code>[</code> <code>]</code> 대괄호가 없는지 확인 — 있으면 제거</li>
+          <li><code>[YOUR-PASSWORD]</code> 부분이 실제 비밀번호로 교체되었는지 확인</li>
+          <li>간헐적 오류(prepared statement)가 나오면 <code>database.py</code>에 <code>statement_cache_size=0</code> 추가</li>
         </ul>
       </div>
     </div>
@@ -1288,8 +1350,8 @@ git push origin main
       <div style="font-size:12px; color: var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:20px;">다음 단계로 고려할 것들</div>
       <div class="footer-grid">
         <div class="footer-card">
-          <h4>🗄️ DB 백업 자동화</h4>
-          <p>PostgreSQL 무료 티어는 90일 후 삭제됩니다. pg_dump + GitHub Actions로 주기적 백업을 설정하거나, Supabase Free로 이전을 고려하세요.</p>
+          <h4>🗄️ DB 백업 & 정지 방지</h4>
+          <p>Supabase 무료 플랜은 1주일 미접속 시 일시정지됩니다. UptimeRobot(무료)에서 5분마다 <code>/health</code> 엔드포인트에 헬스체크를 걸어두면 정지를 방지할 수 있습니다. 유료 전환 시 자동 백업이 활성화됩니다.</p>
         </div>
         <div class="footer-card">
           <h4>🔐 환경변수 보안</h4>
