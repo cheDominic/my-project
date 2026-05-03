@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Stack 연결 테스트 매뉴얼</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2128;
+  --surface3: #21262d;
+  --border: #30363d;
+  --border2: #3d444d;
+  --accent: #58a6ff;
+  --accent2: #f78166;
+  --green: #3fb950;
+  --green2: #238636;
+  --yellow: #d29922;
+  --purple: #bc8cff;
+  --cyan: #79c0ff;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Noto Sans KR', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ─── LAYOUT ─── */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.main { margin-left: 280px; flex: 1; }
+
+/* ─── SIDEBAR ─── */
+.sidebar-head {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-head .tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(63,185,80,0.1);
+  border: 1px solid rgba(63,185,80,0.25);
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.sidebar-head h1 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.sidebar-head p {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+.flow-diagram {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.flow-diagram .fl { color: var(--text2); line-height: 2.2; }
+.flow-diagram .vue { color: #41b883; }
+.flow-diagram .react { color: #61dafb; }
+.flow-diagram .api { color: var(--yellow); }
+.flow-diagram .db { color: var(--purple); }
+.flow-diagram .arr { color: var(--border2); }
+
+.nav-group { padding: 12px 12px 4px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 400;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(88,166,255,0.1); color: var(--accent); font-weight: 500; }
+
+.nav-step {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nav-item.active .nav-step { color: var(--accent); }
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-family: var(--mono);
+}
+.badge-db { background: rgba(188,140,255,0.15); color: var(--purple); }
+.badge-api { background: rgba(210,153,34,0.15); color: var(--yellow); }
+.badge-vue { background: rgba(65,184,131,0.15); color: #41b883; }
+.badge-react { background: rgba(97,218,251,0.15); color: #61dafb; }
+.badge-check { background: rgba(63,185,80,0.15); color: var(--green); }
+
+/* ─── TOPBAR ─── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sb { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: var(--mono); font-weight: 600; }
+.sb-green { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
+.sb-yellow { background: rgba(210,153,34,0.12); color: var(--yellow); border: 1px solid rgba(210,153,34,0.2); }
+.sb-blue { background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.2); }
+
+/* ─── CONTENT ─── */
+.content { padding: 40px 40px 80px; max-width: 900px; }
+
+.section {
+  margin-bottom: 64px;
+  scroll-margin-top: 70px;
+}
+
+/* ─── SECTION HEADER ─── */
+.sec-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sec-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  margin-top: 3px;
+}
+
+.sec-num.db { color: var(--purple); background: rgba(188,140,255,0.08); border-color: rgba(188,140,255,0.2); }
+.sec-num.api { color: var(--yellow); background: rgba(210,153,34,0.08); border-color: rgba(210,153,34,0.2); }
+.sec-num.vue { color: #41b883; background: rgba(65,184,131,0.08); border-color: rgba(65,184,131,0.2); }
+.sec-num.react { color: #61dafb; background: rgba(97,218,251,0.08); border-color: rgba(97,218,251,0.2); }
+.sec-num.check { color: var(--green); background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.2); }
+
+.sec-info h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.sec-info p { font-size: 13px; color: var(--text2); }
+
+/* ─── CODE BLOCK ─── */
+.code-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--surface3);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-fname {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 600;
+}
+.code-fname .dot { color: var(--text3); margin: 0 4px; }
+
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--text); background: var(--surface); }
+.copy-btn.copied { color: var(--green); border-color: rgba(63,185,80,0.4); }
+
+pre {
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: #c9d1d9;
+}
+
+/* syntax */
+.k { color: #ff7b72; }
+.s { color: #a5d6ff; }
+.c { color: #4a5568; font-style: italic; }
+.f { color: #d2a8ff; }
+.n { color: #79c0ff; }
+.v { color: #ffa657; }
+.g { color: var(--green); }
+.y { color: #f2cc60; }
+.p { color: var(--text2); }
+
+/* ─── CALLOUT ─── */
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.co-info { background: rgba(88,166,255,0.07); border: 1px solid rgba(88,166,255,0.18); color: #93c5fd; }
+.co-warn { background: rgba(210,153,34,0.07); border: 1px solid rgba(210,153,34,0.18); color: #fcd34d; }
+.co-ok   { background: rgba(63,185,80,0.07);  border: 1px solid rgba(63,185,80,0.18);  color: #86efac; }
+.co-err  { background: rgba(247,129,102,0.07); border: 1px solid rgba(247,129,102,0.18); color: #fca5a5; }
+.callout .ico { font-size: 15px; flex-shrink: 0; }
+
+/* ─── STEPS ─── */
+.steps { list-style: none; counter-reset: s; }
+.steps li {
+  counter-increment: s;
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text2);
+  align-items: flex-start;
+}
+.steps li:last-child { border-bottom: none; }
+.steps li::before {
+  content: counter(s);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(88,166,255,0.1);
+  border: 1px solid rgba(88,166,255,0.2);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ─── RESULT CARD ─── */
+.result-card {
+  background: #0d1117;
+  border: 1px solid var(--green2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--green);
+}
+
+.result-card .label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* ─── TABLE ─── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.tbl th {
+  background: var(--surface3);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.tbl td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl .mono { font-family: var(--mono); font-size: 12px; color: var(--y); }
+.tbl .green { color: var(--green); font-weight: 600; }
+.tbl .url { font-family: var(--mono); font-size: 11px; color: var(--cyan); }
+
+h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 22px 0 10px; }
+p { color: var(--text2); margin-bottom: 10px; font-size: 13.5px; }
+code { font-family: var(--mono); font-size: 12px; background: var(--surface3); padding: 2px 6px; border-radius: 4px; color: var(--y); }
+a { color: var(--accent); text-decoration: none; }
+strong { color: var(--text); }
+
+/* ─── VERIFICATION TABLE ─── */
+.verify-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.verify-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.verify-card .vc-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verify-card .vc-url {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  background: var(--bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.verify-card .vc-expect {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--green);
+  line-height: 1.6;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ─── SIDEBAR ─── -->
+<nav class="sidebar">
+  <div class="sidebar-head">
+    <div class="tag">Connection Test</div>
+    <h1>Vue/React → FastAPI<br>→ Supabase 연결 검증</h1>
+    <p>전 구간 테스트 매뉴얼</p>
+  </div>
+
+  <div class="flow-diagram">
+    <div class="fl"><span class="vue">Vue.js</span> / <span class="react">React</span></div>
+    <div class="fl"><span class="arr">&nbsp;&nbsp;↓ HTTP GET/POST</span></div>
+    <div class="fl"><span class="api">FastAPI</span> <span style="color:var(--border2)">(Python)</span></div>
+    <div class="fl"><span class="arr">&nbsp;&nbsp;↓ asyncpg</span></div>
+    <div class="fl"><span class="db">Supabase</span> <span style="color:var(--border2)">(PostgreSQL)</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">STEP 1</div>
+    <a class="nav-item active" href="#s1">
+      <span class="nav-step">01</span>
+      Supabase 테이블 생성
+      <span class="nav-badge badge-db">DB</span>
+    </a>
+    <a class="nav-item" href="#s2">
+      <span class="nav-step">02</span>
+      테스트 데이터 삽입
+      <span class="nav-badge badge-db">DB</span>
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">STEP 2</div>
+    <a class="nav-item" href="#s3">
+      <span class="nav-step">03</span>
+      FastAPI DB 연동
+      <span class="nav-badge badge-api">API</span>
+    </a>
+    <a class="nav-item" href="#s4">
+      <span class="nav-step">04</span>
+      API 엔드포인트 추가
+      <span class="nav-badge badge-api">API</span>
+    </a>
+    <a class="nav-item" href="#s5">
+      <span class="nav-step">05</span>
+      로컬 API 테스트
+      <span class="nav-badge badge-api">API</span>
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">STEP 3</div>
+    <a class="nav-item" href="#s6">
+      <span class="nav-step">06</span>
+      Vue.js 테스트 화면
+      <span class="nav-badge badge-vue">Vue</span>
+    </a>
+    <a class="nav-item" href="#s7">
+      <span class="nav-step">07</span>
+      React 테스트 화면
+      <span class="nav-badge badge-react">React</span>
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">STEP 4</div>
+    <a class="nav-item" href="#s8">
+      <span class="nav-step">08</span>
+      Render 배포 & 검증
+      <span class="nav-badge badge-check">✓</span>
+    </a>
+    <a class="nav-item" href="#s9">
+      <span class="nav-step">09</span>
+      최종 체크리스트
+      <span class="nav-badge badge-check">✓</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title">Full Stack 연결 테스트 매뉴얼</span>
+    <span class="sb sb-green">FastAPI</span>
+    <span class="sb sb-yellow">Supabase</span>
+    <span class="sb sb-blue">Vue + React</span>
+  </div>
+
+  <div class="content">
+
+    <!-- ════ S1: Supabase 테이블 생성 ════ -->
+    <div class="section" id="s1">
+      <div class="sec-head">
+        <span class="sec-num db">DB · 01</span>
+        <div class="sec-info">
+          <h2>Supabase 테이블 생성</h2>
+          <p>연결 테스트용 <code>items</code> 테이블을 SQL로 생성합니다</p>
+        </div>
+      </div>
+
+      <ul class="steps">
+        <li><strong>Supabase 대시보드</strong> 접속 → 좌측 메뉴 <strong>"SQL Editor"</strong> 클릭</li>
+        <li><strong>"New query"</strong> 클릭 → 아래 SQL 전체 복사 후 붙여넣기</li>
+        <li>우측 상단 <strong>"Run"</strong> 버튼 클릭 (단축키: Ctrl+Enter)</li>
+      </ul>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">Supabase SQL Editor<span class="dot">·</span>create_table.sql</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="c">-- 연결 테스트용 테이블 생성</span>
+<span class="k">CREATE TABLE IF NOT EXISTS</span> items (
+  id        <span class="n">SERIAL</span> <span class="k">PRIMARY KEY</span>,
+  name      <span class="n">VARCHAR</span>(<span class="y">100</span>) <span class="k">NOT NULL</span>,
+  content   <span class="n">TEXT</span>,
+  created_at <span class="n">TIMESTAMPTZ</span> <span class="k">DEFAULT NOW</span>()
+);
+
+<span class="c">-- 외부 접근 허용 (RLS 비활성화 - 테스트용)</span>
+<span class="k">ALTER TABLE</span> items <span class="k">DISABLE ROW LEVEL SECURITY</span>;</pre>
+      </div>
+
+      <div class="result-card">
+        <div class="label">실행 성공 시 결과</div>
+        Success. No rows returned
+      </div>
+
+      <div class="callout co-warn">
+        <span class="ico">⚠️</span>
+        <div><code>DISABLE ROW LEVEL SECURITY</code>는 테스트 전용입니다. 실제 서비스 전에는 RLS를 활성화하고 정책을 설정해야 합니다.</div>
+      </div>
+    </div>
+
+    <!-- ════ S2: 테스트 데이터 삽입 ════ -->
+    <div class="section" id="s2">
+      <div class="sec-head">
+        <span class="sec-num db">DB · 02</span>
+        <div class="sec-info">
+          <h2>테스트 데이터 삽입</h2>
+          <p>화면에 표시될 샘플 데이터를 미리 넣어둡니다</p>
+        </div>
+      </div>
+
+      <p>SQL Editor에서 새 쿼리를 열고 아래를 실행합니다.</p>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">Supabase SQL Editor<span class="dot">·</span>seed_data.sql</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="k">INSERT INTO</span> items (name, content) <span class="k">VALUES</span>
+  (<span class="s">'연결 테스트 1'</span>,  <span class="s">'Vue → FastAPI → Supabase 정상 연결'</span>),
+  (<span class="s">'연결 테스트 2'</span>,  <span class="s">'React → FastAPI → Supabase 정상 연결'</span>),
+  (<span class="s">'DB 응답 확인'</span>,   <span class="s">'PostgreSQL 데이터 정상 수신'</span>),
+  (<span class="s">'CORS 테스트'</span>,    <span class="s">'Cross-Origin 요청 허용 확인'</span>),
+  (<span class="s">'배포 환경 확인'</span>, <span class="s">'Render 배포 후 실제 URL 연결 확인'</span>);
+
+<span class="c">-- 데이터 확인</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> items <span class="k">ORDER BY</span> id;</pre>
+      </div>
+
+      <div class="result-card">
+        <div class="label">예상 결과 (5 rows)</div>
+        id | name          | content                          | created_at
+        ---+---------------+----------------------------------+-----------
+         1 | 연결 테스트 1  | Vue → FastAPI → Supabase 정상 연결 | 2026-...
+         2 | 연결 테스트 2  | React → FastAPI → ...             | 2026-...
+        ...
+      </div>
+    </div>
+
+    <!-- ════ S3: FastAPI DB 연동 ════ -->
+    <div class="section" id="s3">
+      <div class="sec-head">
+        <span class="sec-num api">API · 03</span>
+        <div class="sec-info">
+          <h2>FastAPI — DB 연결 모듈 추가</h2>
+          <p><code>backend/</code> 폴더에 DB 연결 파일을 추가합니다</p>
+        </div>
+      </div>
+
+      <h3>📁 추가할 파일 구조</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">폴더 구조</span>
+        </div>
+        <pre>backend/
+  ├── main.py          <span class="c"># 기존 파일 (수정)</span>
+  ├── <span class="g">database.py</span>      <span class="c"># 신규: DB 연결 설정</span>
+  ├── <span class="g">models.py</span>        <span class="c"># 신규: 데이터 모델</span>
+  ├── requirements.txt <span class="c"># 기존 (패키지 추가)</span>
+  └── .env             <span class="c"># 기존 (로컬 DB URL)</span></pre>
+      </div>
+
+      <h3>① requirements.txt — 패키지 추가</h3>
+      <p>기존 파일에 아래 패키지를 추가하거나, 아래 내용으로 교체합니다.</p>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">backend<span class="dot">/</span>requirements.txt</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre>fastapi
+uvicorn[standard]
+asyncpg
+sqlalchemy[asyncio]
+asyncpg
+python-dotenv
+pydantic</pre>
+      </div>
+
+      <h3>② database.py — DB 연결 설정</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">backend<span class="dot">/</span>database.py</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="k">import</span> os
+<span class="k">import</span> asyncpg
+<span class="k">from</span> dotenv <span class="k">import</span> load_dotenv
+
+<span class="f">load_dotenv</span>()
+
+<span class="n">DATABASE_URL</span> = os.<span class="f">getenv</span>(<span class="s">"DATABASE_URL"</span>)
+
+<span class="c"># 연결 풀 (앱 시작 시 생성, 종료 시 해제)</span>
+pool = <span class="k">None</span>
+
+<span class="k">async def</span> <span class="f">get_pool</span>():
+    <span class="k">global</span> pool
+    <span class="k">if</span> pool <span class="k">is None</span>:
+        pool = <span class="k">await</span> asyncpg.<span class="f">create_pool</span>(
+            <span class="n">DATABASE_URL</span>,
+            min_size=<span class="y">1</span>,
+            max_size=<span class="y">10</span>,
+            ssl=<span class="s">"require"</span>        <span class="c"># Supabase 필수</span>
+        )
+    <span class="k">return</span> pool
+
+<span class="k">async def</span> <span class="f">close_pool</span>():
+    <span class="k">global</span> pool
+    <span class="k">if</span> pool:
+        <span class="k">await</span> pool.<span class="f">close</span>()</pre>
+      </div>
+
+      <h3>③ models.py — 데이터 모델</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">backend<span class="dot">/</span>models.py</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="k">from</span> pydantic <span class="k">import</span> BaseModel
+<span class="k">from</span> typing <span class="k">import</span> Optional
+<span class="k">from</span> datetime <span class="k">import</span> datetime
+
+<span class="k">class</span> <span class="f">ItemCreate</span>(BaseModel):
+    name: str
+    content: Optional[str] = <span class="k">None</span>
+
+<span class="k">class</span> <span class="f">ItemResponse</span>(BaseModel):
+    id: int
+    name: str
+    content: Optional[str]
+    created_at: datetime
+
+    <span class="k">class</span> <span class="f">Config</span>:
+        from_attributes = <span class="k">True</span></pre>
+      </div>
+
+      <h3>④ .env — 로컬 환경변수</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">backend<span class="dot">/</span>.env</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="c"># Supabase Transaction pooler URL로 교체</span>
+DATABASE_URL=postgresql://postgres.[project-ref]:[password]@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres</pre>
+      </div>
+
+      <div class="callout co-warn">
+        <span class="ico">⚠️</span>
+        <div><code>.env</code> 파일은 <code>.gitignore</code>에 이미 포함되어 있어 GitHub에 올라가지 않습니다. 실제 URL이 커밋되지 않도록 주의하세요.</div>
+      </div>
+    </div>
+
+    <!-- ════ S4: API 엔드포인트 ════ -->
+    <div class="section" id="s4">
+      <div class="sec-head">
+        <span class="sec-num api">API · 04</span>
+        <div class="sec-info">
+          <h2>FastAPI — 엔드포인트 추가</h2>
+          <p><code>main.py</code>를 아래 내용으로 전체 교체합니다</p>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">backend<span class="dot">/</span>main.py &nbsp;— 전체 교체</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="k">from</span> fastapi <span class="k">import</span> FastAPI, HTTPException
+<span class="k">from</span> fastapi.middleware.cors <span class="k">import</span> CORSMiddleware
+<span class="k">from</span> contextlib <span class="k">import</span> asynccontextmanager
+<span class="k">from</span> typing <span class="k">import</span> List
+<span class="k">from</span> database <span class="k">import</span> get_pool, close_pool
+<span class="k">from</span> models <span class="k">import</span> ItemCreate, ItemResponse
+
+<span class="c"># 앱 시작/종료 시 DB 풀 관리</span>
+<span class="f">@asynccontextmanager</span>
+<span class="k">async def</span> <span class="f">lifespan</span>(app: FastAPI):
+    <span class="k">await</span> <span class="f">get_pool</span>()        <span class="c"># 시작 시 연결 풀 생성</span>
+    <span class="k">yield</span>
+    <span class="k">await</span> <span class="f">close_pool</span>()      <span class="c"># 종료 시 정리</span>
+
+app = <span class="f">FastAPI</span>(title=<span class="s">"My API"</span>, version=<span class="s">"1.0.0"</span>, lifespan=lifespan)
+
+app.<span class="f">add_middleware</span>(
+    CORSMiddleware,
+    allow_origins=[<span class="s">"*"</span>],   <span class="c"># 배포 후 실제 도메인으로 변경</span>
+    allow_methods=[<span class="s">"*"</span>],
+    allow_headers=[<span class="s">"*"</span>],
+)
+
+<span class="c"># ── 헬스체크 ──</span>
+<span class="f">@app.get</span>(<span class="s">"/health"</span>)
+<span class="k">async def</span> <span class="f">health</span>():
+    <span class="k">return</span> {<span class="s">"status"</span>: <span class="s">"ok"</span>}
+
+<span class="c"># ── DB 연결 확인 ──</span>
+<span class="f">@app.get</span>(<span class="s">"/db-check"</span>)
+<span class="k">async def</span> <span class="f">db_check</span>():
+    <span class="k">try</span>:
+        pool = <span class="k">await</span> <span class="f">get_pool</span>()
+        <span class="k">async with</span> pool.<span class="f">acquire</span>() <span class="k">as</span> conn:
+            result = <span class="k">await</span> conn.<span class="f">fetchval</span>(<span class="s">"SELECT COUNT(*) FROM items"</span>)
+        <span class="k">return</span> {<span class="s">"db"</span>: <span class="s">"connected"</span>, <span class="s">"items_count"</span>: result}
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">raise</span> <span class="f">HTTPException</span>(status_code=<span class="y">500</span>, detail=<span class="f">str</span>(e))
+
+<span class="c"># ── 아이템 전체 조회 ──</span>
+<span class="f">@app.get</span>(<span class="s">"/items"</span>, response_model=List[ItemResponse])
+<span class="k">async def</span> <span class="f">get_items</span>():
+    pool = <span class="k">await</span> <span class="f">get_pool</span>()
+    <span class="k">async with</span> pool.<span class="f">acquire</span>() <span class="k">as</span> conn:
+        rows = <span class="k">await</span> conn.<span class="f">fetch</span>(
+            <span class="s">"SELECT * FROM items ORDER BY id DESC"</span>
+        )
+    <span class="k">return</span> [<span class="f">dict</span>(row) <span class="k">for</span> row <span class="k">in</span> rows]
+
+<span class="c"># ── 아이템 추가 ──</span>
+<span class="f">@app.post</span>(<span class="s">"/items"</span>, response_model=ItemResponse)
+<span class="k">async def</span> <span class="f">create_item</span>(item: ItemCreate):
+    pool = <span class="k">await</span> <span class="f">get_pool</span>()
+    <span class="k">async with</span> pool.<span class="f">acquire</span>() <span class="k">as</span> conn:
+        row = <span class="k">await</span> conn.<span class="f">fetchrow</span>(
+            <span class="s">"INSERT INTO items (name, content) VALUES ($1, $2) RETURNING *"</span>,
+            item.name, item.content
+        )
+    <span class="k">return</span> <span class="f">dict</span>(row)
+
+<span class="c"># ── 아이템 삭제 ──</span>
+<span class="f">@app.delete</span>(<span class="s">"/items/{item_id}"</span>)
+<span class="k">async def</span> <span class="f">delete_item</span>(item_id: int):
+    pool = <span class="k">await</span> <span class="f">get_pool</span>()
+    <span class="k">async with</span> pool.<span class="f">acquire</span>() <span class="k">as</span> conn:
+        result = <span class="k">await</span> conn.<span class="f">execute</span>(
+            <span class="s">"DELETE FROM items WHERE id = $1"</span>, item_id
+        )
+    <span class="k">if</span> result == <span class="s">"DELETE 0"</span>:
+        <span class="k">raise</span> <span class="f">HTTPException</span>(status_code=<span class="y">404</span>, detail=<span class="s">"Item not found"</span>)
+    <span class="k">return</span> {<span class="s">"deleted"</span>: item_id}</pre>
+      </div>
+    </div>
+
+    <!-- ════ S5: 로컬 API 테스트 ════ -->
+    <div class="section" id="s5">
+      <div class="sec-head">
+        <span class="sec-num api">API · 05</span>
+        <div class="sec-info">
+          <h2>로컬에서 API 테스트</h2>
+          <p>Render 배포 전에 로컬에서 DB 연결을 확인합니다</p>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">TERMINAL &nbsp;— backend/ 폴더에서 실행</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="c"># 가상환경 활성화</span>
+venv\Scripts\activate          <span class="c"># Windows</span>
+source venv/bin/activate        <span class="c"># Mac/Linux</span>
+
+<span class="c"># 패키지 업데이트</span>
+pip install -r requirements.txt
+
+<span class="c"># 서버 실행</span>
+uvicorn main:app --reload</pre>
+      </div>
+
+      <h3>🧪 브라우저에서 확인할 URL</h3>
+
+      <div class="verify-grid">
+        <div class="verify-card">
+          <div class="vc-title">🔵 DB 연결 확인</div>
+          <div class="vc-url">http://localhost:8000/db-check</div>
+          <div class="vc-expect">{"db": "connected", "items_count": 5}</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">🟢 데이터 조회</div>
+          <div class="vc-url">http://localhost:8000/items</div>
+          <div class="vc-expect">[{"id": 5, "name": "배포 환경 확인", ...}, ...]</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">📄 API 문서</div>
+          <div class="vc-url">http://localhost:8000/docs</div>
+          <div class="vc-expect">Swagger UI — POST /items 도 여기서 테스트 가능</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">❤️ 헬스체크</div>
+          <div class="vc-url">http://localhost:8000/health</div>
+          <div class="vc-expect">{"status": "ok"}</div>
+        </div>
+      </div>
+
+      <div class="callout co-ok">
+        <span class="ico">✅</span>
+        <div><code>/db-check</code>에서 <code>"items_count": 5</code>가 나오면 <strong>FastAPI ↔ Supabase 연결 성공</strong>입니다. 다음 단계로 진행하세요.</div>
+      </div>
+
+      <div class="callout co-err">
+        <span class="ico">🔴</span>
+        <div><code>ssl error</code>가 나오면 <code>database.py</code>의 <code>ssl="require"</code>가 있는지 확인. <code>Connection refused</code>면 <code>.env</code>의 URL이 Transaction pooler URL(포트 6543)인지 확인.</div>
+      </div>
+    </div>
+
+    <!-- ════ S6: Vue.js 테스트 화면 ════ -->
+    <div class="section" id="s6">
+      <div class="sec-head">
+        <span class="sec-num vue">Vue · 06</span>
+        <div class="sec-info">
+          <h2>Vue.js — 연결 테스트 화면</h2>
+          <p><code>frontend-vue/src/App.vue</code>를 아래 내용으로 전체 교체합니다</p>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">frontend-vue<span class="dot">/</span>src<span class="dot">/</span>App.vue &nbsp;— 전체 교체</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="p">&lt;</span><span class="k">template</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="n">div</span> class=<span class="s">"app"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="n">header</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="n">h1</span><span class="p">&gt;</span>⚡ Vue + FastAPI + Supabase<span class="p">&lt;/</span><span class="n">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="n">div</span> class=<span class="s">"status"</span> :class=<span class="s">"dbStatus"</span><span class="p">&gt;</span>
+        DB: {{ dbMessage }}
+      <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="n">header</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="n">section</span> class=<span class="s">"add-form"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="n">input</span> v-model=<span class="s">"newName"</span>    placeholder=<span class="s">"이름"</span>     <span class="p">/&gt;</span>
+      <span class="p">&lt;</span><span class="n">input</span> v-model=<span class="s">"newContent"</span> placeholder=<span class="s">"내용"</span>     <span class="p">/&gt;</span>
+      <span class="p">&lt;</span><span class="n">button</span> @click=<span class="s">"addItem"</span> :disabled=<span class="s">"!newName"</span><span class="p">&gt;</span>추가<span class="p">&lt;/</span><span class="n">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="n">section</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="n">div</span> v-if=<span class="s">"loading"</span> class=<span class="s">"loading"</span><span class="p">&gt;</span>로딩 중...<span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="n">div</span> v-else-if=<span class="s">"error"</span> class=<span class="s">"error"</span><span class="p">&gt;</span>{{ error }}<span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="n">ul</span> v-else class=<span class="s">"list"</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="n">li</span> v-for=<span class="s">"item in items"</span> :key=<span class="s">"item.id"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">span</span> class=<span class="s">"id"</span><span class="p">&gt;</span>#{{ item.id }}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">span</span> class=<span class="s">"name"</span><span class="p">&gt;</span>{{ item.name }}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">span</span> class=<span class="s">"content"</span><span class="p">&gt;</span>{{ item.content }}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">button</span> @click=<span class="s">"deleteItem(item.id)"</span><span class="p">&gt;</span>삭제<span class="p">&lt;/</span><span class="n">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="n">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="k">template</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="k">script setup</span><span class="p">&gt;</span>
+<span class="k">import</span> { ref, onMounted } <span class="k">from</span> <span class="s">'vue'</span>
+
+<span class="k">const</span> <span class="n">API</span> = <span class="k">import</span>.meta.env.<span class="n">VITE_API_URL</span> || <span class="s">'http://localhost:8000'</span>
+
+<span class="k">const</span> items      = <span class="f">ref</span>([])
+<span class="k">const</span> loading    = <span class="f">ref</span>(<span class="k">true</span>)
+<span class="k">const</span> error      = <span class="f">ref</span>(<span class="k">null</span>)
+<span class="k">const</span> dbMessage  = <span class="f">ref</span>(<span class="s">'확인 중...'</span>)
+<span class="k">const</span> dbStatus   = <span class="f">ref</span>(<span class="s">'checking'</span>)
+<span class="k">const</span> newName    = <span class="f">ref</span>(<span class="s">''</span>)
+<span class="k">const</span> newContent = <span class="f">ref</span>(<span class="s">''</span>)
+
+<span class="c">// DB 상태 확인</span>
+<span class="k">async function</span> <span class="f">checkDB</span>() {
+  <span class="k">try</span> {
+    <span class="k">const</span> res  = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/db-check`</span>)
+    <span class="k">const</span> data = <span class="k">await</span> res.<span class="f">json</span>()
+    dbMessage.<span class="n">value</span> = <span class="s">`연결됨 (총 ${data.items_count}건)`</span>
+    dbStatus.<span class="n">value</span>  = <span class="s">'ok'</span>
+  } <span class="k">catch</span> {
+    dbMessage.<span class="n">value</span> = <span class="s">'연결 실패'</span>
+    dbStatus.<span class="n">value</span>  = <span class="s">'fail'</span>
+  }
+}
+
+<span class="c">// 목록 불러오기</span>
+<span class="k">async function</span> <span class="f">fetchItems</span>() {
+  <span class="k">try</span> {
+    loading.<span class="n">value</span> = <span class="k">true</span>
+    <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items`</span>)
+    items.<span class="n">value</span> = <span class="k">await</span> res.<span class="f">json</span>()
+  } <span class="k">catch</span> (e) {
+    error.<span class="n">value</span> = <span class="s">`API 오류: ${e.message}`</span>
+  } <span class="k">finally</span> {
+    loading.<span class="n">value</span> = <span class="k">false</span>
+  }
+}
+
+<span class="c">// 아이템 추가</span>
+<span class="k">async function</span> <span class="f">addItem</span>() {
+  <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items`</span>, {
+    method: <span class="s">'POST'</span>,
+    headers: { <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+    body: <span class="n">JSON</span>.<span class="f">stringify</span>({ name: newName.<span class="n">value</span>, content: newContent.<span class="n">value</span> })
+  })
+  newName.<span class="n">value</span> = newContent.<span class="n">value</span> = <span class="s">''</span>
+  <span class="k">await</span> <span class="f">fetchItems</span>()
+}
+
+<span class="c">// 아이템 삭제</span>
+<span class="k">async function</span> <span class="f">deleteItem</span>(id) {
+  <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items/${id}`</span>, { method: <span class="s">'DELETE'</span> })
+  <span class="k">await</span> <span class="f">fetchItems</span>()
+}
+
+<span class="f">onMounted</span>(() => { <span class="f">checkDB</span>(); <span class="f">fetchItems</span>() })
+<span class="p">&lt;/</span><span class="k">script</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="k">style scoped</span><span class="p">&gt;</span>
+* { box-sizing: border-box; }
+.app { max-width: 700px; margin: 40px auto; padding: 0 20px; font-family: sans-serif; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+h1 { font-size: 18px; }
+.status { font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+.status.ok      { background: #d1fae5; color: #065f46; }
+.status.fail    { background: #fee2e2; color: #991b1b; }
+.status.checking{ background: #fef3c7; color: #92400e; }
+.add-form { display: flex; gap: 8px; margin-bottom: 20px; }
+.add-form input { flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; }
+.add-form button { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; }
+.add-form button:disabled { opacity: 0.4; cursor: not-allowed; }
+.loading { color: #6b7280; padding: 20px; text-align: center; }
+.error   { color: #dc2626; padding: 12px; background: #fee2e2; border-radius: 6px; }
+.list { list-style: none; padding: 0; }
+.list li { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #e5e7eb; }
+.id      { font-family: monospace; font-size: 11px; color: #9ca3af; width: 28px; }
+.name    { font-weight: 600; font-size: 13px; width: 140px; }
+.content { flex: 1; font-size: 13px; color: #6b7280; }
+.list li button { padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; }
+<span class="p">&lt;/</span><span class="k">style</span><span class="p">&gt;</span></pre>
+      </div>
+
+      <h3>🧪 로컬 테스트</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">TERMINAL &nbsp;— frontend-vue/ 에서</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre>npm run dev
+<span class="c"># → http://localhost:5173 접속
+# DB 연결됨 표시 + 5개 아이템 목록이 보이면 성공</span></pre>
+      </div>
+    </div>
+
+    <!-- ════ S7: React 테스트 화면 ════ -->
+    <div class="section" id="s7">
+      <div class="sec-head">
+        <span class="sec-num react">React · 07</span>
+        <div class="sec-info">
+          <h2>React — 연결 테스트 화면</h2>
+          <p><code>frontend-react/src/App.jsx</code>를 아래 내용으로 전체 교체합니다</p>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">frontend-react<span class="dot">/</span>src<span class="dot">/</span>App.jsx &nbsp;— 전체 교체</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">'react'</span>
+
+<span class="k">const</span> <span class="n">API</span> = <span class="k">import</span>.meta.env.<span class="n">VITE_API_URL</span> || <span class="s">'http://localhost:8000'</span>
+
+<span class="k">export default function</span> <span class="f">App</span>() {
+  <span class="k">const</span> [items,      setItems]      = <span class="f">useState</span>([])
+  <span class="k">const</span> [loading,    setLoading]    = <span class="f">useState</span>(<span class="k">true</span>)
+  <span class="k">const</span> [error,      setError]      = <span class="f">useState</span>(<span class="k">null</span>)
+  <span class="k">const</span> [dbMsg,      setDbMsg]      = <span class="f">useState</span>(<span class="s">'확인 중...'</span>)
+  <span class="k">const</span> [dbOk,       setDbOk]       = <span class="f">useState</span>(<span class="k">null</span>)
+  <span class="k">const</span> [newName,    setNewName]    = <span class="f">useState</span>(<span class="s">''</span>)
+  <span class="k">const</span> [newContent, setNewContent] = <span class="f">useState</span>(<span class="s">''</span>)
+
+  <span class="k">const</span> <span class="f">checkDB</span> = <span class="k">async</span> () => {
+    <span class="k">try</span> {
+      <span class="k">const</span> res  = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/db-check`</span>)
+      <span class="k">const</span> data = <span class="k">await</span> res.<span class="f">json</span>()
+      <span class="f">setDbMsg</span>(<span class="s">`연결됨 (총 ${data.items_count}건)`</span>)
+      <span class="f">setDbOk</span>(<span class="k">true</span>)
+    } <span class="k">catch</span> {
+      <span class="f">setDbMsg</span>(<span class="s">'연결 실패'</span>); <span class="f">setDbOk</span>(<span class="k">false</span>)
+    }
+  }
+
+  <span class="k">const</span> <span class="f">fetchItems</span> = <span class="k">async</span> () => {
+    <span class="k">try</span> {
+      <span class="f">setLoading</span>(<span class="k">true</span>)
+      <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items`</span>)
+      <span class="f">setItems</span>(<span class="k">await</span> res.<span class="f">json</span>())
+    } <span class="k">catch</span> (e) {
+      <span class="f">setError</span>(<span class="s">`API 오류: ${e.message}`</span>)
+    } <span class="k">finally</span> {
+      <span class="f">setLoading</span>(<span class="k">false</span>)
+    }
+  }
+
+  <span class="k">const</span> <span class="f">addItem</span> = <span class="k">async</span> () => {
+    <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items`</span>, {
+      method: <span class="s">'POST'</span>,
+      headers: { <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+      body: <span class="n">JSON</span>.<span class="f">stringify</span>({ name: newName, content: newContent })
+    })
+    <span class="f">setNewName</span>(<span class="s">''</span>); <span class="f">setNewContent</span>(<span class="s">''</span>)
+    <span class="f">fetchItems</span>()
+  }
+
+  <span class="k">const</span> <span class="f">deleteItem</span> = <span class="k">async</span> (id) => {
+    <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`${API}/items/${id}`</span>, { method: <span class="s">'DELETE'</span> })
+    <span class="f">fetchItems</span>()
+  }
+
+  <span class="f">useEffect</span>(() => { <span class="f">checkDB</span>(); <span class="f">fetchItems</span>() }, [])
+
+  <span class="k">const</span> statusColor = dbOk === <span class="k">null</span> ? <span class="s">'#fef3c7'</span> : dbOk ? <span class="s">'#d1fae5'</span> : <span class="s">'#fee2e2'</span>
+  <span class="k">const</span> statusText  = dbOk === <span class="k">null</span> ? <span class="s">'#92400e'</span> : dbOk ? <span class="s">'#065f46'</span> : <span class="s">'#991b1b'</span>
+
+  <span class="k">return</span> (
+    <span class="p">&lt;</span><span class="n">div</span> style={{maxWidth:<span class="s">'700px'</span>,margin:<span class="s">'40px auto'</span>,padding:<span class="s">'0 20px'</span>,fontFamily:<span class="s">'sans-serif'</span>}}<span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="n">div</span> style={{display:<span class="s">'flex'</span>,justifyContent:<span class="s">'space-between'</span>,alignItems:<span class="s">'center'</span>,marginBottom:<span class="s">'24px'</span>}}<span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">h1</span> style={{fontSize:<span class="s">'18px'</span>}}<span class="p">&gt;</span>⚛️ React + FastAPI + Supabase<span class="p">&lt;/</span><span class="n">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">div</span> style={{fontSize:<span class="s">'12px'</span>,padding:<span class="s">'4px 12px'</span>,borderRadius:<span class="s">'20px'</span>,background:statusColor,color:statusText}}<span class="p">&gt;</span>
+          DB: {dbMsg}
+        <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+
+      <span class="p">&lt;</span><span class="n">div</span> style={{display:<span class="s">'flex'</span>,gap:<span class="s">'8px'</span>,marginBottom:<span class="s">'20px'</span>}}<span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="n">input</span> value={newName}    onChange={e=><span class="f">setNewName</span>(e.target.value)}    placeholder=<span class="s">"이름"</span>
+          style={{flex:<span class="y">1</span>,padding:<span class="s">'8px 12px'</span>,border:<span class="s">'1px solid #d1d5db'</span>,borderRadius:<span class="s">'6px'</span>}} <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="n">input</span> value={newContent} onChange={e=><span class="f">setNewContent</span>(e.target.value)} placeholder=<span class="s">"내용"</span>
+          style={{flex:<span class="y">2</span>,padding:<span class="s">'8px 12px'</span>,border:<span class="s">'1px solid #d1d5db'</span>,borderRadius:<span class="s">'6px'</span>}} <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="n">button</span> onClick={addItem} disabled={!newName}
+          style={{padding:<span class="s">'8px 16px'</span>,background:<span class="s">'#3b82f6'</span>,color:<span class="s">'white'</span>,border:<span class="s">'none'</span>,borderRadius:<span class="s">'6px'</span>,cursor:<span class="s">'pointer'</span>}}<span class="p">&gt;</span>
+          추가
+        <span class="p">&lt;/</span><span class="n">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+
+      {loading <span class="p">&amp;&amp;</span> <span class="p">&lt;</span><span class="n">div</span> style={{color:<span class="s">'#6b7280'</span>,textAlign:<span class="s">'center'</span>,padding:<span class="s">'20px'</span>}}<span class="p">&gt;</span>로딩 중...<span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>}
+      {error   <span class="p">&amp;&amp;</span> <span class="p">&lt;</span><span class="n">div</span> style={{color:<span class="s">'#dc2626'</span>,padding:<span class="s">'12px'</span>,background:<span class="s">'#fee2e2'</span>,borderRadius:<span class="s">'6px'</span>}}<span class="p">&gt;</span>{error}<span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>}
+      {!loading <span class="p">&amp;&amp;</span> !error <span class="p">&amp;&amp;</span> (
+        <span class="p">&lt;</span><span class="n">ul</span> style={{listStyle:<span class="s">'none'</span>,padding:<span class="y">0</span>}}<span class="p">&gt;</span>
+          {items.<span class="f">map</span>(item <span class="p">=&gt;</span> (
+            <span class="p">&lt;</span><span class="n">li</span> key={item.id} style={{display:<span class="s">'flex'</span>,alignItems:<span class="s">'center'</span>,gap:<span class="s">'10px'</span>,padding:<span class="s">'12px'</span>,borderBottom:<span class="s">'1px solid #e5e7eb'</span>}}<span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="n">span</span> style={{fontFamily:<span class="s">'monospace'</span>,fontSize:<span class="s">'11px'</span>,color:<span class="s">'#9ca3af'</span>,width:<span class="s">'28px'</span>}}<span class="p">&gt;</span>#{item.id}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="n">span</span> style={{fontWeight:<span class="y">600</span>,fontSize:<span class="s">'13px'</span>,width:<span class="s">'140px'</span>}}<span class="p">&gt;</span>{item.name}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="n">span</span> style={{flex:<span class="y">1</span>,fontSize:<span class="s">'13px'</span>,color:<span class="s">'#6b7280'</span>}}<span class="p">&gt;</span>{item.content}<span class="p">&lt;/</span><span class="n">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="n">button</span> onClick={()=><span class="f">deleteItem</span>(item.id)}
+                style={{padding:<span class="s">'4px 10px'</span>,background:<span class="s">'#fee2e2'</span>,color:<span class="s">'#dc2626'</span>,border:<span class="s">'none'</span>,borderRadius:<span class="s">'4px'</span>,cursor:<span class="s">'pointer'</span>,fontSize:<span class="s">'11px'</span>}}<span class="p">&gt;</span>
+                삭제
+              <span class="p">&lt;/</span><span class="n">button</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="n">li</span><span class="p">&gt;</span>
+          ))}
+        <span class="p">&lt;/</span><span class="n">ul</span><span class="p">&gt;</span>
+      )}
+    <span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+  )
+}</pre>
+      </div>
+    </div>
+
+    <!-- ════ S8: 배포 ════ -->
+    <div class="section" id="s8">
+      <div class="sec-head">
+        <span class="sec-num check">DEPLOY · 08</span>
+        <div class="sec-info">
+          <h2>Render 배포 & 환경변수 설정</h2>
+          <p>전체 코드를 push하고 Render 환경변수를 업데이트합니다</p>
+        </div>
+      </div>
+
+      <h3>① 전체 코드 push</h3>
+      <div class="code-wrap">
+        <div class="code-bar">
+          <span class="code-fname">TERMINAL &nbsp;— 프로젝트 루트에서</span>
+          <button class="copy-btn" onclick="cp(this)">복사</button>
+        </div>
+        <pre>cd D:\workspace\my-project   <span class="c"># 루트로 이동</span>
+git add .
+git commit -m "feat: add full-stack connection test"
+git push origin main
+<span class="c"># → Render 자동 배포 시작 (약 3~4분)</span></pre>
+      </div>
+
+      <h3>② Render 환경변수 확인</h3>
+      <p>Render 대시보드 → <strong>FastAPI Web Service</strong> → <strong>Environment</strong> 탭에서 아래 2개가 있는지 확인:</p>
+
+      <div style="border:1px solid var(--border); border-radius:8px; overflow:hidden; margin:12px 0;">
+        <table class="tbl">
+          <tr>
+            <th>Key</th><th>Value</th><th>비고</th>
+          </tr>
+          <tr>
+            <td class="mono">DATABASE_URL</td>
+            <td class="mono" style="color:var(--cyan)">postgresql://postgres.[ref]:[pw]@...supabase.com:6543/postgres</td>
+            <td>Supabase Transaction pooler URL</td>
+          </tr>
+          <tr>
+            <td class="mono">PYTHON_VERSION</td>
+            <td class="mono">3.11.0</td>
+            <td>Python 버전 고정</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>③ 배포 완료 후 확인할 URL</h3>
+      <div class="verify-grid">
+        <div class="verify-card">
+          <div class="vc-title">🟡 FastAPI DB 확인</div>
+          <div class="vc-url">https://[api].onrender.com/db-check</div>
+          <div class="vc-expect">{"db": "connected", "items_count": 5}</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">🟡 FastAPI 목록</div>
+          <div class="vc-url">https://[api].onrender.com/items</div>
+          <div class="vc-expect">[{"id": 5, "name": "배포 환경 확인", ...}]</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">💚 Vue 화면</div>
+          <div class="vc-url">https://[vue].onrender.com</div>
+          <div class="vc-expect">DB 연결됨 표시 + 목록 5개 표시</div>
+        </div>
+        <div class="verify-card">
+          <div class="vc-title">⚛️ React 화면</div>
+          <div class="vc-url">https://[react].onrender.com</div>
+          <div class="vc-expect">DB 연결됨 표시 + 목록 5개 표시</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ S9: 최종 체크리스트 ════ -->
+    <div class="section" id="s9">
+      <div class="sec-head">
+        <span class="sec-num check">CHECK · 09</span>
+        <div class="sec-info">
+          <h2>최종 연결 체크리스트</h2>
+          <p>모두 통과하면 전 구간 연결 완료입니다</p>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+        <table class="tbl">
+          <tr>
+            <th>#</th><th>확인 항목</th><th>방법</th><th>기대 결과</th>
+          </tr>
+          <tr><td class="green">□</td><td>Supabase 테이블 존재</td><td>SQL Editor: <code>SELECT * FROM items</code></td><td>5개 행 반환</td></tr>
+          <tr><td class="green">□</td><td>FastAPI 서버 기동</td><td><code>/health</code> 접속</td><td><code>{"status":"ok"}</code></td></tr>
+          <tr><td class="green">□</td><td>FastAPI ↔ DB 연결</td><td><code>/db-check</code> 접속</td><td><code>items_count: 5</code></td></tr>
+          <tr><td class="green">□</td><td>데이터 조회 API</td><td><code>/items</code> 접속</td><td>JSON 배열 5개</td></tr>
+          <tr><td class="green">□</td><td>데이터 추가 API</td><td>Vue/React 화면에서 추가</td><td>목록에 즉시 반영</td></tr>
+          <tr><td class="green">□</td><td>데이터 삭제 API</td><td>Vue/React 화면에서 삭제</td><td>목록에서 즉시 제거</td></tr>
+          <tr><td class="green">□</td><td>Vue → API 연결</td><td>Vue 배포 URL 접속</td><td>DB 연결됨 + 목록 표시</td></tr>
+          <tr><td class="green">□</td><td>React → API 연결</td><td>React 배포 URL 접속</td><td>DB 연결됨 + 목록 표시</td></tr>
+        </table>
+      </div>
+
+      <div class="callout co-ok" style="margin-top:20px">
+        <span class="ico">🎉</span>
+        <div>8개 항목 모두 통과 시 <strong>Vue.js / React → FastAPI → Supabase</strong> 전 구간 연결이 정상 동작하는 것입니다.</div>
+      </div>
+
+      <div class="callout co-info">
+        <span class="ico">💡</span>
+        <div>이 테스트 코드는 검증 전용입니다. 실제 기능 개발 시 <code>App.vue</code> / <code>App.jsx</code>는 별도 컴포넌트로 분리하고, API URL은 <code>src/api/</code> 폴더로 모듈화하는 것을 권장합니다.</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+function cp(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(() => {
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 1600);
+  });
+}
+
+// Nav active state
+const secs = document.querySelectorAll('.section');
+const navs = document.querySelectorAll('.nav-item');
+new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navs.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' }).observe(...Array.from(secs).map ? undefined : secs);
+
+secs.forEach(s => {
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navs.forEach(n => n.classList.remove('active'));
+        const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -75% 0px' }).observe(s);
+});
+</script>
+</body>
+</html>
