@@ -5,7 +5,7 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql://postgres.lijslvcfpdhghwmuhxhm:[Dpslrmak81!!]@aws-1-ap-northeast-2.pooler.supabase.com:6543/ecommerce_forecast"
+    database_url: str = "postgresql+asyncpg://postgres.lijslvcfpdhghwmuhxhm:[Dpslrmak81!!]@aws-1-ap-northeast-2.pooler.supabase.com:6543/ecommerce_forecast"
     anthropic_api_key: str = ""
     allowed_origins: str = "http://localhost:5173,http://localhost:3000"
 
