@@ -24,11 +24,21 @@ class Base(DeclarativeBase):
 
 def create_engine():
     settings = get_settings()
+
+    # 환경변수가 postgresql:// 또는 postgres:// 로 오는 경우 asyncpg로 변환
+    db_url = settings.database_url \
+        .replace("postgres://", "postgresql+asyncpg://") \
+        .replace("postgresql://", "postgresql+asyncpg://")
+
     return create_async_engine(
-        settings.database_url,
+        db_url,
         pool_size=10,
         max_overflow=20,
         echo=False,
+        connect_args={
+            "ssl": "require",
+            "statement_cache_size": 0    # Supabase pgbouncer 필수
+        }
     )
 
 
